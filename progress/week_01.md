@@ -12,7 +12,6 @@
 - Learned how to document and version learning progress using Markdown and Git  
 - Read the first two chapters of *Stuff Matters* by Mark Miodownik
 
----
 
 ## 📘 Key Learnings
 | Concept | Description | Source |
