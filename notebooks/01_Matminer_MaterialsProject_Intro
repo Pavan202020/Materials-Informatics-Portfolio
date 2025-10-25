@@ -1,0 +1,40 @@
+### Introduction to Matminer & Materials Project
+!pip install matminer pymatgen mp-api pandas matplotlib seaborn
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from mp_api.client import MPRester
+from matminer.data_retrieval.retrieve_MP import MPDataRetrieval
+
+API_KEY = "bwIBVyml1bGmgbmvvHcYGUlJBkRWTjL9"  # Replace with your Materials Project API key
+
+from mp_api.client import MPRester
+mpr = MPRester(API_KEY)
+# mpdr = MPDataRetrieval(API_KEY) # This is not needed when using the new MPRester
+criteria = {"band_gap": {"$gt": 1, "$lt": 4}}
+properties = ["material_id", "formula_pretty", "band_gap", "formation_energy_per_atom"]
+
+# Use the new MPRester object to query the data
+# The query method is now available directly on the MPRester object
+# df = mpr.query(criteria=criteria, properties=properties, df_proj=True)
+
+# Updated code using the new summary.search method
+# Note: The new method no longer supports direct MongoDB-type queries for criteria
+# You might need to adjust the criteria based on the available parameters in summary.search
+docs = mpr.summary.search(band_gap=(1, 4), fields=properties)
+
+# Convert the list of SummaryDoc objects to a pandas DataFrame
+df = pd.DataFrame([doc.dict() for doc in docs])
+
+print(f"Fetched {len(df)} materials from Materials Project.")
+display(df.head())
+df.describe()
+plt.figure(figsize=(8,6))
+sns.scatterplot(data=df, x="formation_energy_per_atom", y="band_gap")
+plt.title("Band Gap vs Formation Energy")
+plt.xlabel("Formation Energy (eV/atom)")
+plt.ylabel("Band Gap (eV)")
+plt.show()
+
+df.to_csv("materials_bandgap_data.csv", index=False)
